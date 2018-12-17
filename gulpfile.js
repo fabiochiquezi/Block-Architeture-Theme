@@ -47,11 +47,12 @@ gulp.task('gulp-concat', gulpJs);
 //Watch
 function watch() {
   gulp.watch('src/scss/*.scss', compilaSass);
-  gulp.watch('src/js/*.js', gulpJs);
+  // gulp.watch('src/js/*.js', gulpJs);
+  gulp.watch('build/js/*.js').on('change', browserSync.reload);
   gulp.watch(['build/*.html', 'build/*.php']).on('change', browserSync.reload);
 }
 
 gulp.task('watch', watch)
 
 //Default
-gulp.task('default', gulp.parallel('watch', 'browser-sync', 'sass', 'gulp-concat'));
+gulp.task('default', gulp.parallel('watch', 'browser-sync', 'sass'));

@@ -1,14 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="css/style.css">
-  <title>Document</title>
+  <title>Freela</title>
 </head>
 <body>
-  <h1>Teste</h1>
+
+  <header class="menu-principal">
+    <div class="container">
+      <div class="row justify-content-between align-content-center align-items-center">
+
+        <div class="logo">
+          <a href="">
+            <img src="img/logo.png" alt="">
+          </a>
+        </div>
+
+        <a href="" class="mob-i-func d-lg-none">
+          <img src="img/svg/menu-hamb.svg" alt="">
+        </a>
+
+        <ul class="menu-ul no-active d-lg-flex flex-lg-row">
+          <li><a href=""><div class="active">home</div></a></li>
+          <li class="sub-menu no-active">
+            <a href="" class="set"><div> about</div></a>
+            <ul>
+              <li><a href="">projects</a></li>
+              <li><a href="">guarantes</a></li>
+            </ul>
+          </li>
+          <li><a href=""><div>projects</div></a></li>
+          <li class="sub-menu no-active">
+              <a href="" class="set"><div>team</div></a>
+              <ul>
+                  <li><a href="">Item 01</a></li>
+                  <li><a href="">Item 02</a></li>
+                </ul>
+            </li>          <li class="sub-menu no-active">
+            <a href="" class="set"><div>services</div></a>
+            <ul>
+                <li><a href="">Item 01</a></li>
+                <li><a href="">Item 02</a></li>
+              </ul>
+          </li>
+          <li><a href=""><div>blog</div></a></li>
+          <li><a href=""><div>contacts</div></a></li>
+          <li class="d-none d-lg-block li-search">
+            <form action="" class="search-hidden-func no-active">
+              <input type="text" class="input-search" name="search" placeholder="search">
+              <input type="submit" value="submit">
+              <img src="img/svg/search.svg" alt="">
+            </form>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </header><!-- end header-menu-principal -->
+
 </body>
+<script src="js/jquery.min.js"></script>
 <script src="js/main.js"></script>
 </html>
