@@ -248,4 +248,227 @@ $(document).ready(function(){
   
   new menuMobFunc ( $('.menu-principal') );
 
+
+  class slideShowFunc{
+    constructor(el){
+      this.el = el;
+      this.bannerContent = this.el.find('.content-banner');
+      this.slide = this.el.find('.slide');
+      this.slideActive = this.el.find('.slide.active');
+      this.numberSlides = this.slide.length;
+      this.arrow = this.el.find('.arrow');
+      this.contentBalls = this.el.find('.content-balls');
+      this.countSlide = 0; //Pra marcar o numero do slide
+      this.debugClick = true;
+      self = this;
+
+      this._init();
+    }
+    _init(){
+      this._ballsStart();
+
+      this._startSlideLoop();
+
+      this.el
+      .on('mouseenter', () => {
+
+        console.log('stopLoop')
+        clearInterval(this.loop)
+      })
+      .on('mouseleave', () =>{
+        clearInterval(this.loop)
+        this._startSlideLoop(this.countSlide);
+      })
+
+      this.arrow.each(function(){
+        $(this).on('click', () => {
+          if(self.debugClick){
+            if($(this).hasClass('ar-left')){
+              self._leftArrowFunc();
+            }
+            else{
+              self._rightArrowFunc();
+            }
+          }
+        })
+      });
+    }
+    _ballsStart(){
+      this.slide.each((i, el) => {
+        this.contentBalls.append(`<li class="ball-slide ball-${i}"></li>`);
+      });
+      $('.ball-slide:first-child').addClass('active');
+      this.balls = this.el.find('.ball-slide');
+      this.balls.each(function(){
+        $(this).on('click', function (e) {
+          e.preventDefault();
+          if(self.debugClick){
+            self._clickBall(this);
+          }
+        })
+      });
+      
+    }
+    _clickBall(item){
+      this.debugClick = false;
+      let numeroItem = $(item).attr('class').substr(16, 1);
+
+      let nextLi = $(`.content-banner .slide-${numeroItem}`);
+      let activeLi = this.el.find('.slide.active');
+    
+      this.slide.each(function(){
+        if( !( $(this).hasClass('active') )) {
+          $(this).css({
+            left: '100%'
+          })
+        }
+      });
+
+      nextLi.animate({
+        left: '0px'
+      }, 1000);
+
+      activeLi.animate({
+        left: '-100%'
+      }, 1000);
+
+      setTimeout(() => {
+        activeLi.css({
+          left: '100%'
+        }); 
+        
+        activeLi.removeClass('active');
+        nextLi.addClass('active');
+
+        this.countSlide = numeroItem;
+        console.log(this.countSlide);
+    
+        this.debugClick = true;
+      }, 1050);
+    }
+    _leftArrowFunc(){
+      this.debugClick = false;
+      this.countSlide++;
+      let nextLi = this.countSlide == this.numberSlides ? this.el.find('.slide:first-child') : this.el.find('.slide.active').next();
+      let activeLi = this.el.find('.slide.active');
+
+      this.slide.each(function(){
+        if( !( $(this).hasClass('active') )) {
+          $(this).css({
+            left: '100%'
+          })
+        }
+      });
+
+      nextLi.animate({
+        left: '0px'
+      }, 1000);
+
+      activeLi.animate({
+        left: '-100%'
+      }, 1000);
+
+      setTimeout(() => {
+        activeLi.css({
+          left: '100%'
+        }); 
+        
+        activeLi.removeClass('active');
+        
+
+        if(this.countSlide == this.numberSlides){
+          this.el.find('.slide:first-child').addClass('active');
+          this.countSlide = 0;
+        }
+        else{
+          nextLi.addClass('active'); 
+        }
+        this.debugClick = true;
+      }, 1050);
+    }
+    _rightArrowFunc(){
+      this.debugClick = false;
+      this.countSlide--;
+      let nextLi = this.countSlide < 0 ? this.el.find('.slide:last-child') : this.el.find('.slide.active').prev();
+      let activeLi = this.el.find('.slide.active');
+
+      this.slide.each(function(){
+        if( !( $(this).hasClass('active') )) {
+          $(this).css({
+            left: '-100%'
+          })
+        }
+      });
+      
+      nextLi.animate({
+        left: '0px'
+      }, 1000);
+
+      activeLi.animate({
+        left: '100%'
+      }, 1000);
+
+      setTimeout(() => {
+        activeLi.css({
+          left: '-100%'
+        }); 
+        
+        activeLi.removeClass('active');
+        if(this.countSlide < 0){
+          this.el.find('.slide:last-child').addClass('active');
+          this.countSlide = this.numberSlides - 1;
+        }
+        else{
+          nextLi.addClass('active'); 
+        }
+        this.debugClick = true;
+      }, 1050);      
+    }
+    _startSlideLoop(counter = 0){
+      this.countSlide = counter;
+
+      this.loop = setInterval(() => {
+        this.countSlide++;
+        let nextLi = this.countSlide == this.numberSlides ? this.el.find('.slide:first-child') : this.el.find('.slide.active').next();
+        let activeLi = this.el.find('.slide.active');
+
+        //Debug caso tiver sido clicado o arro right
+        this.slide.each(function(){
+          if( !( $(this).hasClass('active') )) {
+            $(this).css({
+              left: '100%'
+            })
+          }
+        });
+
+        nextLi.animate({
+          left: '0px'
+        }, 1000);
+
+        activeLi.animate({
+          left: '-100%'
+        }, 1000);
+
+        setTimeout(() => {
+          activeLi.css({
+            left: '100%'
+          }); 
+          
+          activeLi.removeClass('active');
+          if(this.countSlide == this.numberSlides){
+            this.el.find('.slide:first-child').addClass('active');
+            this.countSlide = 0;
+          }
+          else{
+            nextLi.addClass('active'); 
+          }
+        }, 1050);
+      }, 2000);
+    }
+
+  }
+
+
+  new slideShowFunc ( $('.banner-slide') );
+
 });

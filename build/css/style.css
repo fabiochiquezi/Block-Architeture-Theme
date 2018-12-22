@@ -2160,7 +2160,8 @@ select:-webkit-autofill:focus {
       .menu-principal .menu-ul li a {
         font-size: 18px; }
     .menu-principal .menu-ul li.sub-menu {
-      position: relative; }
+      position: relative;
+      z-index: 10000; }
       .menu-principal .menu-ul li.sub-menu ul {
         display: none;
         margin-top: 12px; }
@@ -2291,3 +2292,64 @@ select:-webkit-autofill:focus {
     @media (max-width: 1040px) {
       .menu-principal .menu-ul li a {
         padding: 28px 10px; } }
+
+.banner-slide {
+  width: 100%;
+  height: 700px;
+  position: relative;
+  overflow: hidden; }
+  .banner-slide .content-banner {
+    width: 2000px; }
+    .banner-slide .content-banner .slide {
+      position: absolute;
+      width: 100%;
+      height: 700px;
+      left: 100%;
+      top: 0px; }
+    .banner-slide .content-banner .slide.active {
+      z-index: 1000;
+      left: 0px; }
+    .banner-slide .content-banner .slide-0 {
+      background: url("../img/img-1.jpg") center center no-repeat; }
+    .banner-slide .content-banner .slide-1 {
+      background: url("../img/img-2.jpg") center center no-repeat; }
+    .banner-slide .content-banner .slide-2 {
+      background: url("../img/img-3.jpg") center center no-repeat; }
+  .banner-slide .arrow {
+    position: absolute;
+    top: 50%;
+    font-size: 20px;
+    color: red;
+    z-index: 10000;
+    cursor: pointer;
+    margin-top: -60px; }
+  .banner-slide .ar-left {
+    padding: 50px;
+    background: #ddd;
+    left: 0; }
+  .banner-slide .ar-right {
+    padding: 50px;
+    background: #ddd;
+    right: 0; }
+  .banner-slide .content-balls {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    margin-left: -75px;
+    z-index: 1000;
+    text-align: center; }
+    .banner-slide .content-balls .ball-slide {
+      width: 30px;
+      height: 30px;
+      background: blue;
+      margin-left: 30px;
+      cursor: pointer;
+      -webkit-transition: all 15  0ms ease;
+      -o-transition: all 15  0ms ease;
+      transition: all 15  0ms ease; }
+      .banner-slide .content-balls .ball-slide:first-child {
+        margin-left: 0px; }
+      .banner-slide .content-balls .ball-slide:hover {
+        background: red; }
+    .banner-slide .content-balls .ball-slide.active {
+      background: yellow; }
