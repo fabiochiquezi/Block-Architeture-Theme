@@ -146,6 +146,18 @@ select:-webkit-autofill:focus {
   4 - Header Menu
 ******************/
 
+.home-page{
+  .banner-slide{
+    margin-bottom: 128px;
+  }
+  .banner-slide-second{
+    margin-bottom: 128px;
+  }
+  .contagem-sec{
+    margin-bottom: 128px;
+  }
+}
+
 .menu-principal{
   font-family: 'titilliumbold';
   background: $colorNeut03;
@@ -470,8 +482,9 @@ select:-webkit-autofill:focus {
   .ar-left{
     padding: 50px;
     left: 24px;
-    @media(min-width: 768px){
-      left: 0;
+    @media(min-width: 1170px){
+      left: 50%;
+      margin-left: -632px;
     }
 
     img{
@@ -481,8 +494,9 @@ select:-webkit-autofill:focus {
   .ar-right{
     padding: 50px;
     right: 24px;
-    @media(min-width: 768px){
-      right: 0;
+    @media(min-width: 1170px){
+      right: 50%;
+      margin-right: -632px;
     }
     img{
       width: 24px;
@@ -523,12 +537,10 @@ select:-webkit-autofill:focus {
 }
 
 .banner-slide-second{
-  margin-bottom: 100px;
-
   header{
     text-align: center;
     width: 100%;
-    margin: 128px 0px 64px;
+    margin-bottom: 64px;
     position: relative;
   }
   .ar{
@@ -635,13 +647,13 @@ select:-webkit-autofill:focus {
 }
 
 .about-us-sec{
-  margin-bottom: 55px;
-  height: 620px;
+  // margin-bottom: 55px;
+  // height: 1080px;
 
   .img-back{
     @media(min-width: 1170px){
       background: url('../img/forabout.png') no-repeat -510px -22px;
-      height: 620px;
+      // height: 650px;
     }
   }
 
@@ -660,7 +672,7 @@ select:-webkit-autofill:focus {
     margin-bottom: 24px;
 
     li{
-      padding-right: 35px;
+      padding-right: 14px;
       border-bottom: solid 10px #e8e8e8;
       margin-right: 2px;
       padding-bottom: 10px;
@@ -669,6 +681,10 @@ select:-webkit-autofill:focus {
       font-family: 'titillium_bdbold';
       cursor: pointer;
       transition: all 200ms ease;
+
+      @media(min-width: 768px){
+        padding-right: 35px;
+      }
 
       &:hover{
         opacity: 0.7;
@@ -716,15 +732,17 @@ select:-webkit-autofill:focus {
         width: 100%;
 
         img{
-          float: right;
-          margin-left: 16px;
+          display: block;
+          margin: 0px auto;
+          margin-bottom: 32px;
+        }
+        @media(min-width: 768px){
+          img{
+            float: right;
+            margin-left: 16px;
+          }
         }
       }
-      // .wrap-img{
-      //   width: 264px;
-      //   height: 264px;
-      //   margin-left: 24px;
-      // }
     }
     .item-3{
       p{
@@ -735,7 +753,70 @@ select:-webkit-autofill:focus {
 }
 
 .blockqoute-1{
-  padding: 50px;
+  padding: 25px;
   font-size: 16px;
   line-height: 30px;
+  @media(min-width: 768px){
+    padding: 50px;
+  }
+}
+
+.contagem-sec{
+  background: url('../img/contagem-1.jpg') no-repeat center center;
+  padding: 128px 0px 148px;
+  margin-bottom: 90px;
+
+  ul{
+    width: 100%;
+  }
+  li{
+    position: relative;
+
+    &:last-child{
+      margin-bottom: 0px;
+    }
+
+    span{
+      text-align: center;
+      display: block;
+      color: #fff;
+    }
+
+    .numero{
+      font-size: 80px;
+      position: relative;
+      z-index: 100;
+    }
+    .texto{
+      font-size: 16px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .bloco-quad{
+      width: 97px;
+      height: 97px;
+      background: $colorPrinc02;
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      margin-left: -49.5px;
+    }
+  }
+
+  @media(min-width: 768px){
+    li{
+      text-align: center;
+
+      &:nth-child(3){
+        margin-bottom: 0px;
+      }   
+    }
+  }
+
+  @media(min-width: 992px){
+    li{
+      margin-bottom: 0px;
+    }
+  }
 }

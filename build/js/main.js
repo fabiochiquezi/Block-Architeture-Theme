@@ -705,17 +705,38 @@ $(document).ready(function(){
       this.itemContent = this.el.querySelectorAll('.col-content .item');
       this.menuActive = this.el.querySelector('.col-menu li.active');
       this.contentActive = this.el.querySelector('.col-content .item.active');
+      this.contentCol = this.el.querySelectorAll('.col-content');
 
       this._init();
     }
     _init(){
+
       let self = this;
+
+      this._organiza();
+
       this.itemMenu.forEach((el, i) =>{
         el.addEventListener('click', function(e){
           e.preventDefault();
           self._startFunc(this);
         });
       })
+
+      window.onresize = () => {
+        this._debug();
+      }
+    }
+    _debug(){
+      this._organiza();
+    }
+    _organiza(){
+      let verificaTamanhoItens = 0;
+      this.itemContent.forEach( (el, i) => {
+        if(el.offsetHeight > verificaTamanhoItens){
+          verificaTamanhoItens = el.offsetHeight;
+        }
+      })
+      this.contentCol[0].style.height = `${verificaTamanhoItens}px`;
     }
     _startFunc(elem){
       this.menuActive.classList.remove('active');
@@ -730,5 +751,74 @@ $(document).ready(function(){
     }
   }
 
-  new colapseSimple ( document.querySelector('.colapse-simple'), {})
+  new colapseSimple ( document.querySelector('.colapse-simple'), {});
+
+  class contagemFunc{
+    constructor(el, option){
+      this.el = el;
+      this.option = option;
+
+      this.elHeight = this.el.offsetHeight;
+      this.offsetTop = this.el.offsetTop;
+      this.endOffsetTop = this.offsetTop + ( this.elHeight / 2);
+      this.windowHeight = window.innerHeight;
+
+      this.itens = this.el.querySelectorAll('li .numero');
+
+      this.active = false;
+
+      this._init();
+    }
+    _init(){
+      window.onscroll = (el, i) => {  
+        this._startFunc();
+      }
+    }
+    _startFunc(){
+      let scroll = window.pageYOffset + this.windowHeight;
+
+      if( scroll > this.endOffsetTop){
+         if(this.active == false){
+          this._contagem();
+         }
+      }
+    }
+    _contagem(){
+      this.active = true;
+      this.itens.forEach((el, i) => {
+        let maxNumber = el.attributes[1].value;
+        let numberAtual = parseInt(el.textContent);
+        let velocity;
+        
+        switch (i) {
+          case 0:
+            velocity = 130;
+            break;
+
+          case 1:
+            velocity = 15;
+            break;
+
+          case 2:
+            velocity = 30;
+            break;
+
+          case 3:
+            velocity = 85;
+            break;
+        }
+        
+        let loop = setInterval(() => {
+          el.textContent = numberAtual++;
+
+          if(el.textContent == maxNumber){
+            clearInterval(loop);
+          }
+
+        }, velocity);
+      })
+    }
+  }
+
+  new contagemFunc ( document.querySelector('.contagem-sec'), {});
 });
