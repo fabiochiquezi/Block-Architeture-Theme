@@ -22,6 +22,7 @@ $(document).ready(function(){
 
     this.debugClick = true;
     this.debugClickSubMenu = true;
+    this.clickSerchDebug = true;
   }
   menuMobFunc.prototype._initEvents = function(){
     var self = this;
@@ -44,12 +45,24 @@ $(document).ready(function(){
 
     //Animação IconSearch
     this.formSearch
-    .on('mouseenter', function () { 
-        self._startSearch();
+    .on('mouseenter', function (e) { 
+        self._startSearch(e);
     })
-    .on('mouseleave', function () {  
-        self._startSearch();
+    .on('click', function (e) {  
+      self._startSearch(e);
+    })
+    .on('mouseleave', function (e) {  
+        self._startSearch(e);
     });
+    //Debug close Search
+    $(window).on('click', function(e){
+      let targ = $(e.target).attr('class');
+      if( !( self.formSearch.hasClass('no-active') ) && !(self.inputSearch.val().length) && (targ == 'menu-principal' || targ.indexOf('slide') == 0 )){
+        self.inputSearch.css('width', '0px');
+        self.formSearch.addClass('no-active');  
+        self.clickSerchDebug = true;  
+      }
+    })
 
     this._debugResize()
   }
@@ -114,17 +127,24 @@ $(document).ready(function(){
       }
     })
   }
-  menuMobFunc.prototype._startSearch = function () {  
-    if(this.formSearch.hasClass('no-active')){
-      this.inputSearch.css('width', '200px');
-      this.formSearch.removeClass('no-active');
+  menuMobFunc.prototype._startSearch = function (e) { 
+    if(e.originalEvent.type == 'click'){
+      this.formSearch.removeClass('no-active');      
+      this.clickSerchDebug = false;
     }
     else{
-      if(!(this.inputSearch.val().length)){
-        this.inputSearch.css('width', '0px');
-        this.formSearch.addClass('no-active');  
+      if(this.formSearch.hasClass('no-active')){
+        this.inputSearch.css('width', '200px');
+        this.formSearch.removeClass('no-active');
+      }
+      else{
+        if(!(this.inputSearch.val().length) && this.clickSerchDebug){
+          this.inputSearch.css('width', '0px');
+          this.formSearch.addClass('no-active');  
+        }
       }
     }
+
   }
   menuMobFunc.prototype._startSubMenu = function (el) {
     var self = this;
@@ -172,7 +192,7 @@ $(document).ready(function(){
         self.iconMob.find('img').css('transform', 'scale(0.75)');
         //Animação
         self.iconMob.find('img').attr('src', 'img/svg/cancel.svg');
-        self.iconMob.fadeTo(300, '1');
+        self.iconMob.fadeTo(600, '1');
       });
 
       //Anima o aumento da div pai, onde está o background
@@ -186,7 +206,7 @@ $(document).ready(function(){
         timingLi = 0;
         //Passa em cada li e faz a animação
         self.li.each(function(){
-          timingLi = timingLi + 150;
+          timingLi = timingLi + 100;
             $(this).animate({
               opacity: 1,
               left: '0px'
@@ -252,187 +272,270 @@ $(document).ready(function(){
   class slideShowFunc{
     constructor(el){
       this.el = el;
-      this.bannerContent = this.el.find('.content-banner');
-      this.slide = this.el.find('.slide');
-      this.slideActive = this.el.find('.slide.active');
+
+      //Váriaveis do slide
+      this.bannerContent = this.el.find( '.content-banner' ); 
+      this.slide = this.el.find( '.slide' );
+      this.slideActive = this.el.find( '.slide.active' );
+      
+      //Váriaveis arrow e balls
+      this.arrow = this.el.find( '.arrow' );
+      this.contentBalls = this.el.find( '.content-balls' );
+
+      //Váriaveis de apoio: contador de slide, e número total de slide
       this.numberSlides = this.slide.length;
-      this.arrow = this.el.find('.arrow');
-      this.contentBalls = this.el.find('.content-balls');
-      this.countSlide = 0; //Pra marcar o numero do slide
+      this.countSlide = 0;
+
+      //Debug: click (libera o click)
       this.debugClick = true;
+
       self = this;
 
       this._init();
     }
     _init(){
+      // 1 - Inícia os balls automáticamente
       this._ballsStart();
 
+      // 2 - Chama o loop
       this._startSlideLoop();
 
+      // 3 - Para o loop com mouseenter
       this.el
       .on('mouseenter', () => {
-
-        console.log('stopLoop')
-        clearInterval(this.loop)
+        clearInterval( this.loop )
       })
       .on('mouseleave', () =>{
-        clearInterval(this.loop)
-        this._startSlideLoop(this.countSlide);
+        clearInterval( this.loop )
+        this._startSlideLoop( this.countSlide );
       })
 
+      // 4 - Passa o slide com next ou before
       this.arrow.each(function(){
-        $(this).on('click', () => {
+        $( this ).on('click', () => {
+
           if(self.debugClick){
-            if($(this).hasClass('ar-left')){
+            if( $( this ).hasClass( 'ar-left' ) ){
               self._leftArrowFunc();
             }
             else{
               self._rightArrowFunc();
             }
           }
+
         })
       });
+
+      // 5 - Debug
+      this._debug();
+    }
+    _debug(){
+
+      //Quando mudar de aba limpa o loop
+      $( window ).blur(() => {
+        clearInterval( this.loop )
+      });
+
     }
     _ballsStart(){
-      this.slide.each((i, el) => {
-        this.contentBalls.append(`<li class="ball-slide ball-${i}"></li>`);
+
+      //Adiciona os balls automaticamente
+      this.slide.each( ( i, el ) => {
+        this.contentBalls.append( `<li class="ball-slide ball-${i}"></li>` );
       });
-      $('.ball-slide:first-child').addClass('active');
-      this.balls = this.el.find('.ball-slide');
+      //Adiciona a classe "Active" no primeiro
+      $( '.ball-slide:first-child' ).addClass( 'active' );
+
+      //Ativa o evento de click em todos os balls
+      this.balls = this.el.find( '.ball-slide' );
       this.balls.each(function(){
-        $(this).on('click', function (e) {
+
+        $( this ).on('click', function ( e ) {
           e.preventDefault();
-          if(self.debugClick){
-            self._clickBall(this);
+
+          if( self.debugClick ){
+            // 1.1 - Muda slide ao clicar no ball
+            self._clickBall( this );
           }
-        })
+        });
+
       });
       
     }
-    _clickBall(item){
-      this.debugClick = false;
-      let numeroItem = $(item).attr('class').substr(16, 1);
+    _changeBall(item){
+      $('.ball-slide.active').removeClass('active');
+      $(item).addClass('active');
+    }
+    _clickBall( item ){
+      this._changeBall(item);
 
-      let nextLi = $(`.content-banner .slide-${numeroItem}`);
-      let activeLi = this.el.find('.slide.active');
+      //Debug e váriaveis
+      this.debugClick = false;
+      let numeroItem = $( item ).attr( 'class' ).substr( 16, 1 );
+
+      let nextLi = $( `.content-banner .slide-${numeroItem}` );
+      let activeLi = this.el.find( '.slide.active' );
     
-      this.slide.each(function(){
-        if( !( $(this).hasClass('active') )) {
-          $(this).css({
+      // Debug: realoca os elementos na posição necessária para fazermos o animate sem bugar
+      this.slide.each( function(){
+        if( !( $( this ).hasClass( 'active' ) )) {
+          $( this ).css({
             left: '100%'
           })
         }
       });
 
+      //Pega a próxima li e lança o animate
       nextLi.animate({
         left: '0px'
-      }, 1000);
+      }, 600);
 
+      //Pega a li ativa e retira ela
       activeLi.animate({
         left: '-100%'
-      }, 1000);
+      }, 600);
 
-      setTimeout(() => {
+      //Após o efeito organiza os dados para o próximo
+      setTimeout( () => {
+
         activeLi.css({
           left: '100%'
         }); 
         
-        activeLi.removeClass('active');
-        nextLi.addClass('active');
+        activeLi.removeClass( 'active' );
+        nextLi.addClass( 'active' );
 
         this.countSlide = numeroItem;
-        console.log(this.countSlide);
     
         this.debugClick = true;
-      }, 1050);
+
+      }, 650);
     }
     _leftArrowFunc(){
+
+      //Debug e váriaveis
       this.debugClick = false;
       this.countSlide++;
-      let nextLi = this.countSlide == this.numberSlides ? this.el.find('.slide:first-child') : this.el.find('.slide.active').next();
-      let activeLi = this.el.find('.slide.active');
 
-      this.slide.each(function(){
-        if( !( $(this).hasClass('active') )) {
-          $(this).css({
+      let nextLi = this.countSlide == this.numberSlides ? this.el.find( '.slide:first-child' ) : this.el.find( '.slide.active' ).next();
+      let activeLi = this.el.find( '.slide.active' );
+
+      //ChangeBall Func
+      let numeroSlide = nextLi.attr('class').substr( 12, 1 );
+      let itemBall = $(`.ball-${numeroSlide}`);
+      this._changeBall(itemBall);
+
+      // Debug: realoca os elementos na posição necessária para fazermos o animate sem bugar
+      this.slide.each( function(){
+        if( !( $( this ).hasClass( 'active' ) )) {
+          $( this ).css({
             left: '100%'
           })
         }
       });
 
+      //Pega a próxima li e lança o animate
       nextLi.animate({
         left: '0px'
-      }, 1000);
+      }, 600);
 
+      //Pega a li ativa e retira ela
       activeLi.animate({
         left: '-100%'
-      }, 1000);
+      }, 600);
 
+      //Após o efeito organiza os dados para o próximo
       setTimeout(() => {
+
         activeLi.css({
           left: '100%'
         }); 
         
-        activeLi.removeClass('active');
+        activeLi.removeClass( 'active' );
         
-
-        if(this.countSlide == this.numberSlides){
-          this.el.find('.slide:first-child').addClass('active');
+        if( this.countSlide == this.numberSlides ){
+          this.el.find( '.slide:first-child' ).addClass( 'active' );
           this.countSlide = 0;
         }
         else{
           nextLi.addClass('active'); 
         }
+
         this.debugClick = true;
-      }, 1050);
+
+      }, 650);
     }
     _rightArrowFunc(){
+
+      //Debug e váriaveis
       this.debugClick = false;
       this.countSlide--;
-      let nextLi = this.countSlide < 0 ? this.el.find('.slide:last-child') : this.el.find('.slide.active').prev();
-      let activeLi = this.el.find('.slide.active');
 
+      let nextLi = this.countSlide < 0 ? this.el.find( '.slide:last-child' ) : this.el.find( '.slide.active' ).prev();
+      let activeLi = this.el.find( '.slide.active' );
+
+      //ChangeBall Func
+      let numeroSlide = nextLi.attr('class').substr( 12, 1 );
+      let itemBall = $(`.ball-${numeroSlide}`);
+      this._changeBall(itemBall);
+
+      // Debug: realoca os elementos na posição necessária para fazermos o animate sem bugar
       this.slide.each(function(){
-        if( !( $(this).hasClass('active') )) {
-          $(this).css({
+        if( !( $( this ).hasClass( 'active' ) )) {
+          $( this ).css({
             left: '-100%'
           })
         }
       });
       
+      //Pega a próxima li e lança o animate
       nextLi.animate({
         left: '0px'
-      }, 1000);
+      }, 600);
 
+      //Pega a li ativa e retira ela
       activeLi.animate({
         left: '100%'
-      }, 1000);
+      }, 600);
 
-      setTimeout(() => {
+      //Após o efeito organiza os dados para o próximo
+      setTimeout( () => {
+
         activeLi.css({
           left: '-100%'
         }); 
         
-        activeLi.removeClass('active');
+        activeLi.removeClass( 'active' );
         if(this.countSlide < 0){
-          this.el.find('.slide:last-child').addClass('active');
+          this.el.find( '.slide:last-child' ).addClass( 'active' );
           this.countSlide = this.numberSlides - 1;
         }
         else{
-          nextLi.addClass('active'); 
+          nextLi.addClass( 'active' ); 
         }
         this.debugClick = true;
-      }, 1050);      
+
+      }, 650);      
     }
     _startSlideLoop(counter = 0){
+      //váriaveis
       this.countSlide = counter;
 
-      this.loop = setInterval(() => {
+      //Loop passa slide automático
+      this.loop = setInterval( () => {
+
         this.countSlide++;
+
         let nextLi = this.countSlide == this.numberSlides ? this.el.find('.slide:first-child') : this.el.find('.slide.active').next();
+
         let activeLi = this.el.find('.slide.active');
 
-        //Debug caso tiver sido clicado o arro right
+        //ChangeBall Func
+        let numeroSlide = nextLi.attr('class').substr( 12, 1 );
+        let itemBall = $(`.ball-${numeroSlide}`);
+        this._changeBall(itemBall);
+
+        // Debug: realoca os elementos na posição necessária para fazermos o animate sem bugar
         this.slide.each(function(){
           if( !( $(this).hasClass('active') )) {
             $(this).css({
@@ -441,34 +544,191 @@ $(document).ready(function(){
           }
         });
 
+        //Pega a próxima li e lança o animate
         nextLi.animate({
           left: '0px'
-        }, 1000);
+        }, 600);
 
+        //Pega a li ativa e retira ela
         activeLi.animate({
           left: '-100%'
-        }, 1000);
+        }, 600);
 
+        //Após o efeito organiza os dados para o próximo
         setTimeout(() => {
+
           activeLi.css({
             left: '100%'
           }); 
           
           activeLi.removeClass('active');
-          if(this.countSlide == this.numberSlides){
-            this.el.find('.slide:first-child').addClass('active');
+
+          if( this.countSlide == this.numberSlides ){
+            this.el.find( '.slide:first-child' ).addClass( 'active' );
             this.countSlide = 0;
           }
           else{
-            nextLi.addClass('active'); 
+            nextLi.addClass( 'active' ); 
           }
-        }, 1050);
-      }, 2000);
+
+        }, 650);
+      }, 3000);
     }
 
   }
 
-
   new slideShowFunc ( $('.banner-slide') );
 
+
+  class bannerSecond{
+    constructor(el, option){
+      this.el = el;
+      this.option = option;
+
+      this.itens = this.el.querySelectorAll('.item');
+      this.widthItem = this.el.querySelector('.item:first-child').offsetWidth;
+
+      this.contentBanner = this.el.querySelector('.content-banner');
+      this.arrowLeft = this.el.querySelector('.ar-left');
+      this.arrowRight = this.el.querySelector('.ar-right');
+      this.lastItem = this.el.querySelector('.item:last-child');
+      this.firstItem = this.el.querySelector('.item:first-child');
+
+      this.marginRight = this.option.margin;
+      this.widthMargin = this.widthItem + this.marginRight;
+
+      this.minLeft = 0;
+
+      this.windowWidth = window.innerWidth;
+      this.breakMobile = this.windowWidth < 768;
+      this.breakTab = this.windowWidth < 992;
+      this.breakDesk = this.windowWidth < 1170;
+      this.breakDeskMask = this.windowWidth > 1170;
+
+      this._init();
+    }
+    _init(){
+
+      this._organiza();
+      this._debug();
+
+      this.arrowLeft.addEventListener('click', () => {
+        this._startFunc('left');
+      });
+      this.arrowRight.addEventListener('click', () => {
+        this._startFunc('right');
+      });
+      
+    }
+    _organiza(){
+      let marginLeft = this.widthItem + this.marginRight;
+
+      this.itens.forEach((el, i) =>{
+        if(i == 0){
+          marginLeft = 0;
+        }
+        el.style.left = `${marginLeft}px`;
+        marginLeft = marginLeft + this.widthItem + this.marginRight;
+      });
+
+      this.maxLeft = parseInt(this.el.querySelector('.item:last-child').style.left);
+    }
+    _debug(){
+      window.onresize = (e) =>{
+        this.windowWidth = window.innerWidth;
+        this.breakMobile = this.windowWidth < 768;
+        this.breakTab = this.windowWidth < 992;
+        this.breakDesk = this.windowWidth < 1170;
+        this.breakDeskMask = this.windowWidth > 1170;
+
+        this._organiza();
+      }
+    }
+    _defineCondition(lado){
+      let condMob = parseInt(this.lastItem.style.left) == 0 && lado == 'left' || parseInt(this.lastItem.style.left) == this.maxLeft && lado == 'right';
+
+      let condTab = parseInt(this.lastItem.style.left) == 283 && lado == 'left' || this.breakTab && parseInt(this.lastItem.style.left) == this.maxLeft && lado == 'right';
+
+      let condDesk = parseInt(this.lastItem.style.left) == 566 && lado == 'left' || parseInt(this.lastItem.style.left) == this.maxLeft && lado == 'right';
+
+      let condDeskMax = parseInt(this.lastItem.style.left) == 849 && lado == 'left' || parseInt(this.lastItem.style.left) == this.maxLeft && lado == 'right';
+
+      if(this.breakMobile){
+        return condMob;
+      }
+      else if(this.breakTab){
+        return condTab;
+      }
+      else if(this.breakDesk){
+        return condDesk;
+      }
+      else{
+        return condDeskMax;
+      }
+    }
+    _startFunc(lado){
+      this.itens.forEach((el) =>{
+        if(this._defineCondition(lado)){
+          if(this.el.querySelector('.ar-off') != null){
+            this.el.querySelector('.ar-off').classList.remove('ar-off');
+          }
+          if(lado == 'right'){
+            this.arrowRight.classList.add('ar-off')
+          }
+          else{
+            this.arrowLeft.classList.add('ar-off')
+          }
+          
+        }
+        else{
+          if(this.el.querySelector('.ar-off') != null){
+            this.el.querySelector('.ar-off').classList.remove('ar-off');
+          }
+          let elLeft = lado == 'left' ? parseInt(el.style.left) - this.widthMargin : parseInt(el.style.left) + this.widthMargin;
+
+          el.style.left = `${elLeft}px`;          
+        }
+
+      })
+    }
+  }
+
+  new bannerSecond ( document.querySelector('.banner-home-func'), {
+    margin: 20
+  } );
+
+  class colapseSimple{
+    constructor(el, option){
+      this.el = el;
+      this.option = option;
+      this.itemMenu = this.el.querySelectorAll('.col-menu .item');
+      this.itemContent = this.el.querySelectorAll('.col-content .item');
+      this.menuActive = this.el.querySelector('.col-menu li.active');
+      this.contentActive = this.el.querySelector('.col-content .item.active');
+
+      this._init();
+    }
+    _init(){
+      let self = this;
+      this.itemMenu.forEach((el, i) =>{
+        el.addEventListener('click', function(e){
+          e.preventDefault();
+          self._startFunc(this);
+        });
+      })
+    }
+    _startFunc(elem){
+      this.menuActive.classList.remove('active');
+      elem.classList.add('active');
+
+      this.contentActive.classList.remove('active');
+      let item = elem.getAttribute('class').split(' ')[1];
+      this.el.querySelector(`.col-content .${item}`).classList.add('active');
+
+      this.menuActive = this.el.querySelector('.col-menu li.active');
+      this.contentActive = this.el.querySelector('.col-content .item.active');
+    }
+  }
+
+  new colapseSimple ( document.querySelector('.colapse-simple'), {})
 });
